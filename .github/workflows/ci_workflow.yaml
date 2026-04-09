@@ -6,6 +6,10 @@ on:
 jobs:
   run-script:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java: [8,11,17,21]
+        distribution: [temurin,microsoft]
     steps:
       - name: checkout Code 
         uses: actions/checkout@v5
@@ -13,8 +17,8 @@ jobs:
       - name: Setup java 17
         uses: actions/setup-java@v5
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          distribution: ${{ matrix.distribution }}
+          java-version: ${{ matrix.java }}
           cache: 'maven'
          
       - name: Build with Maven
@@ -24,7 +28,10 @@ jobs:
       - name: upload JAR Artifacts
         uses: actions/upload-artifact@v5
         with:
-         name: jar-artifacts
-         path: |
-           module1/target/*.jar
-           module2/target/*.jar
+           name: jar-${{ matrix.java }}-${{ matrix.distribution }}
+           path: target/*.jar
+        # name: jar-artifacts
+         #path: |
+           #module1/target/*.jar
+           #module2/target/*.jar
+        
